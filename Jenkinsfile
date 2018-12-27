@@ -1,18 +1,10 @@
-pipeline {
-    agent any
-    environment {
-        //be sure to replace "willbla" with your own Docker Hub username
-        DOCKER_IMAGE_NAME = "devenv27/train-schedule"
+node {
+    def built_img = ''
+    stage('Checkout git repo') {
+      git branch: 'master', url: params.git_repo
     }
-    stages {
-        stage('Build') {
-            steps {
-                echo 'Running build automation'
-                sh './gradlew build --no-daemon'
-                archiveArtifacts artifacts: 'dist/trainSchedule.zip'
-            }
-        }
-        stage('Build Docker Image') {
+    
+stage('Build Docker Image') {
             when {
                 branch 'master'
             }
@@ -38,6 +30,8 @@ pipeline {
                 }
             }
         }
+
+
         stage('DeployToProduction') {
             when {
                 branch 'master'
@@ -54,4 +48,3 @@ pipeline {
             }
         }
     }
-}
